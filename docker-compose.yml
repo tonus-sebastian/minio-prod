@@ -6,14 +6,26 @@ networks:
 services:
 
   minio:
-    image: 'bitnami/minio:latest'
+    image: 'quay.klgsys.com/mirror/bitnami/minio:latest'
     volumes:
-      - ./data:/data
+      - ./data:/bitnami/minio/data
     ports:
       - '9000:9000'
       - '9001:9001'
     environment:
-      - MINIO_ROOT_USER=
-      - MINIO_ROOT_PASSWORD=
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    networks:
+      - app-minio
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl/klgsys2023.crt:/etc/nginx/ssl/klgsys2023.crt
+      - ./ssl/minio.key:/etc/nginx/ssl/minio.key
     networks:
       - app-minio
